@@ -234,9 +234,65 @@ set(tesseractmain_src
 add_executable                  (tesseractmain ${tesseractmain_src})
 target_link_libraries           (tesseractmain tesseract)
 set_target_properties           (tesseractmain PROPERTIES OUTPUT_NAME tesseract)
+set_target_properties           (tesseractmain PROPERTIES DEBUG_OUTPUT_NAME tesseractd)
 
 ########################################
 
 add_subdirectory(training)
 
 ###############################################################################
+install(
+    FILES
+        ${tesseract_hdr} ${CMAKE_BINARY_DIR}/config_auto.h
+    DESTINATION
+        include/
+)
+if (WIN32)
+	get_property(debugName TARGET tesseract PROPERTY DEBUG_OUTPUT_NAME)
+	get_property(Name TARGET tesseract PROPERTY OUTPUT_NAME)
+	
+	get_property(debugNameExe TARGET tesseractmain PROPERTY DEBUG_OUTPUT_NAME)
+	get_property(NameExe TARGET tesseractmain PROPERTY OUTPUT_NAME)
+	install(
+		FILES
+			${CMAKE_BINARY_DIR}/Debug/${debugName}.lib
+		DESTINATION
+			lib
+		CONFIGURATIONS
+			Debug
+	)
+	install(
+		FILES
+			${CMAKE_BINARY_DIR}/Release/${Name}.lib
+		DESTINATION
+			lib
+		CONFIGURATIONS
+			Release
+	)
+	if (NOT STATIC)
+		install(
+			FILES
+				${CMAKE_BINARY_DIR}/bin/Debug/${debugName}.dll ${CMAKE_BINARY_DIR}/bin/Debug/${debugNameExe}.exe 
+			DESTINATION
+				bin
+			CONFIGURATIONS
+				Debug
+		)
+		install(
+			FILES
+				${CMAKE_BINARY_DIR}/bin/Release/${Name}.dll ${CMAKE_BINARY_DIR}/bin/Release/${NameExe}.exe
+			DESTINATION
+				bin
+			CONFIGURATIONS
+				Release
+		)
+		install(
+			FILES
+				${CMAKE_BINARY_DIR}/bin/Debug/${debugName}.pdb 
+			DESTINATION
+				lib
+			CONFIGURATIONS
+				Debug
+		)	
+	endif()
+endif()
