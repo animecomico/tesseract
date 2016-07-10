@@ -1,0 +1,57 @@
+# ===================================================================================
+#  The Tesseract CMake configuration file
+#
+#             ** File generated automatically, do not modify **
+#
+#  Usage from an external project:
+#    In your CMakeLists.txt, add these lines:
+#
+#    find_package(Tesseract REQUIRED)
+#    include_directories(${Tesseract_INCLUDE_DIRS})
+#    target_link_libraries(MY_TARGET_NAME ${Tesseract_LIBRARIES})
+#
+#    This file will define the following variables:
+#      - Tesseract_LIBRARIES_DIRS        : Directory where is libraries of Tesseract
+#      - Tesseract_LIBRARIES             : The list of all imported targets for Tesseract modules dynamic.
+#      - Tesseract_LIBRARIES_STATIC      : The list of all imported targets for Tesseract modules static.
+#      - Tesseract_INCLUDE_DIRS          : The Tesseract include directories.
+#      - Tesseract_INCLUDE_DIRS_BACK     : The Tesseract include directories back folder.
+#      - Tesseract_VERSION               : The version of this Tesseract build: "@VERSION_PLAIN@"
+#      - Tesseract_VERSION_MAJOR         : Major version part of Tesseract_VERSION: "@VERSION_MAJOR@"
+#      - Tesseract_VERSION_MINOR         : Minor version part of Tesseract_VERSION: "@VERSION_MINOR@"
+#
+#  **************WARNING***********************************************************************************************************
+#  When use Tesseract_LIBRARIES_STATIC, the depends (leptonica (zlib, tiff, gif, png , jpeg)) that was used to build Tesseract_LIBRARIES_STATIC
+#  should be include in your project, otherwise, you have problem with reference undefined of depends.
+#  ********************************************************************************************************************************
+# ===================================================================================
+
+get_filename_component(Tesseract_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+# ======================================================
+#  Version variables:
+# ======================================================
+
+SET(Tesseract_VERSION           @VERSION_PLAIN@)
+SET(Tesseract_VERSION_MAJOR     @VERSION_MAJOR@)
+SET(Tesseract_VERSION_MINOR     @VERSION_MINOR@)
+
+# ======================================================
+# Include directories to add to the user project:
+# ======================================================
+
+# Provide the include directories to the caller
+set(Tesseract_INCLUDE_DIRS "${Tesseract_CONFIG_PATH}/include/Tesseract")
+set(Tesseract_INCLUDE_DIRS_BACK "${Tesseract_CONFIG_PATH}/include/")
+option(Tesseract_include1 "../include/" ON)
+if(Tesseract_include1)
+	include_directories(${Tesseract_INCLUDE_DIRS})
+endif()
+
+# ====================================================================
+# Link libraries:
+# ====================================================================
+set(Tesseract_LIBRARIES_DIRS "${Tesseract_CONFIG_PATH}/lib/")
+link_directories(${Tesseract_LIBRARIES_DIRS})
+set(Tesseract_LIBRARIES debug tesseract@VERSION_MAJOR@@VERSION_MINOR@d optimized tesseract@VERSION_MAJOR@@VERSION_MINOR@)
+set(Tesseract_LIBRARIES_STATIC debug tesseract-static-mtdll-@VERSION_MAJOR@@VERSION_MINOR@d optimized tesseract-static-mtdll-@VERSION_MAJOR@@VERSION_MINOR@)

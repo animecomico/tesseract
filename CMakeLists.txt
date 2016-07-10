@@ -65,10 +65,14 @@ find_package(PkgConfig)
 # compiler and linker
 #
 ###############################################################################
-
-set(LIBRARY_TYPE SHARED)
-if (STATIC)
-    set(LIBRARY_TYPE)
+option(BUILD_SHARED "Build Shared" ON)
+if(BUILD_SHARED)
+	set(LIBRARY_TYPE SHARED)
+else()
+	set(STATIC 1)
+	if (STATIC)
+		set(LIBRARY_TYPE STATIC)
+	endif()
 endif()
 
 if (WIN32)
@@ -114,8 +118,11 @@ set(INCLUDE_DIR
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/templates/TesseractConfig-version.cmake.in
     ${CMAKE_BINARY_DIR}/TesseractConfig-version.cmake @ONLY)
+#configure_file(
+#    ${CMAKE_SOURCE_DIR}/cmake/templates/TesseractConfig.cmake.in
+#    ${CMAKE_BINARY_DIR}/TesseractConfig.cmake @ONLY)
 configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/templates/TesseractConfig.cmake.in
+    ${CMAKE_SOURCE_DIR}/cmake/templates/TesseractConfigInstall.cmake.in
     ${CMAKE_BINARY_DIR}/TesseractConfig.cmake @ONLY)
 
 ###############################################################################
@@ -209,8 +216,14 @@ target_link_libraries           (tesseract ${LIB_Ws2_32} ${LIB_pthread})
 set_target_properties           (tesseract PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR_0}.${VERSION_MINOR_1})
 set_target_properties           (tesseract PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR_0}.${VERSION_MINOR_1})
 if (WIN32)
-set_target_properties           (tesseract PROPERTIES OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR})
-set_target_properties           (tesseract PROPERTIES DEBUG_OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR}d)
+	if (STATIC)
+		set_target_properties           (tesseract PROPERTIES OUTPUT_NAME       tesseract-static-mtdll-${VERSION_MAJOR}${VERSION_MINOR})
+		set_target_properties           (tesseract PROPERTIES DEBUG_OUTPUT_NAME tesseract-static-mtdll-${VERSION_MAJOR}${VERSION_MINOR}d)
+	endif()
+	if (NOT STATIC)
+		set_target_properties           (tesseract PROPERTIES OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR})
+		set_target_properties           (tesseract PROPERTIES DEBUG_OUTPUT_NAME tesseract${VERSION_MAJOR}${VERSION_MINOR}d)
+	endif()
 endif()
 
 if (NOT USES_CPPAN)
@@ -266,6 +279,14 @@ if (WIN32)
 			${CMAKE_BINARY_DIR}/Release/${Name}.lib
 		DESTINATION
 			lib
+		CONFIGURATIONS
+			Release
+	)
+	install(
+		FILES
+			${CMAKE_BINARY_DIR}/TesseractConfig.cmake ${CMAKE_BINARY_DIR}/TesseractConfig-version.cmake
+		DESTINATION
+			./
 		CONFIGURATIONS
 			Release
 	)
